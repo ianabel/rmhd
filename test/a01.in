@@ -1,0 +1,178 @@
+&dev
+ devid=0
+/
+&algo
+ debug = 0
+ restart = 0
+ rest = alf
+ linonly = 1
+ nwrite = 5
+ nforce = 0
+ maxdt = 0.1
+ cfl = .1
+/
+!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! Initial conditions
+!!!!!!!!!!!!!!!!!!!!!!!!!!!
+&init
+ decaying = 0
+ driven = 0
+ orszag_tang = 0
+ noise = 0
+ aw_coll = 1.
+ kpeak = 8
+/
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! Grid
+!!!!!!!!!!!!!!!!!!!!!!!!!!!
+&grid
+ Nx = 8
+ Ny = 8
+ Nz = 256
+ X0 = 1.0
+ Y0 = 1.0
+ Z0 = 6.283
+ Nm = 1
+ nsteps = 200
+/
+!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! Dissipation
+!!!!!!!!!!!!!!!!!!!!!!!!!!!
+&dissipation
+  alpha_z = 8
+  nu_kz = 0.0
+  alpha_hyper = 8
+  nu_hyper = 0.0
+/
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! Forcing
+!!!!!!!!!!!!!!!!!!!!!!!!!!!
+&forcing
+  nkstir = 4
+  gm_nkstir = 10
+  fampl = 1.0
+  gm_fampl = 0.e-0
+/
+
+&stir_0
+  kx = 1
+  ky = 0
+  kz = 1
+/
+
+&stir_1
+  kx = 0 
+  ky = 1
+  kz = 1
+/
+
+&stir_2
+  kx = -1
+  ky = 0
+  kz = 1
+/
+
+&stir_3
+  kx = 1
+  ky = 1
+  kz = 1
+/
+
+&stir_4
+  kx = -1
+  ky = 1
+  kz = 1
+/
+&stir_5
+  kx = 1
+  ky = 0
+  kz = 2
+/
+&stir_6
+  kx = 0
+  ky = 1
+  kz = 2
+/
+&stir_7
+  kx = -1
+  ky = 0
+  kz = 2
+/
+&stir_8
+  kx = 1
+  ky = 1
+  kz = 2
+/
+&stir_9
+  kx = -1
+  ky = 1
+  kz = 2
+/
+&gm_stir_0
+  kx = 1
+  ky = 0
+  kz = 1
+/
+
+&gm_stir_1
+  kx = 0 
+  ky = 1
+  kz = 1
+/
+
+&gm_stir_2
+  kx = -1
+  ky = 0
+  kz = 1
+/
+&gm_stir_3
+  kx = 1
+  ky = 1
+  kz = 1
+/
+&gm_stir_4
+  kx = -1
+  ky = 1
+  kz = 1
+/
+&gm_stir_5
+  kx = 1
+  ky = 0
+  kz = 2
+/
+&gm_stir_6
+  kx = 0
+  ky = 1
+  kz = 2
+/
+&gm_stir_7
+  kx = -1
+  ky = 0
+  kz = 2
+/
+&gm_stir_8
+  kx = 1
+  ky = 1
+  kz = 2
+/
+&gm_stir_9
+  kx = -1
+  ky = 1
+  kz = 2
+/
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! Slow modes
+!!!!!!!!!!!!!!!!!!!!!!!!!!!
+&slow
+  beta = 1.0
+  nu_coll = 150.0
+  alpha_m = 4
+  nu_kp_g = 0.0
+  alpha_kp_g = 4
+  nu_kz_g = 0.0
+  alpha_kz_g = 4
+  lambda_user = 2.0
+/
