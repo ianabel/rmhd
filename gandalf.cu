@@ -762,6 +762,8 @@ void finit(cuComplex *f, cuComplex *g)
         index = iky + (Ny/2+1) * ikx + (Ny/2+1)*Nx*ikz;
 
         g[index].x = -2.0;
+        // Avoid running the AW Coll initial condition stuff if we're doing the O-T vortex
+        return;
     }
 
 
