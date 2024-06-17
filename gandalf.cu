@@ -83,7 +83,7 @@ float *fdxR, *fdyR, *gdxR, *gdyR;
 
 cufftHandle plan_C2R, plan_R2C, plan2d_C2R;
 
-// NetCDF info 
+// NetCDF info
 
 struct NetCDF_ids {
 
@@ -101,11 +101,11 @@ struct NetCDF_ids {
     int nwrite, nforce, maxdt, restart_name, cfl;
     int kpeak;
 
-    int kperps[2];    
-    int  kpars[2];    
+    int kperps[2];
+    int  kpars[2];
     int kstir[1];
 
-    int kparperp[3];    
+    int kparperp[3];
 
     size_t start_1d[2];
 };
@@ -251,7 +251,7 @@ int main(int argc, char* argv[]) {
                 break;
             }
             fflush(stdout);
-        } 
+        }
         if ((nsteps>0) && (istep % nwrite==0)) diagnostics(f_d, g_d, tim, istep/nwrite, id);
 
         DEBUGPRINT("Before restart write \n");
@@ -272,7 +272,7 @@ int main(int argc, char* argv[]) {
         ////////////////////
 
         // Destroy fft plan and close diagnostics
-        fft_plan_destroy(); 
+        fft_plan_destroy();
         close_netcdf_diag(id);
 
         // Free all arrays
@@ -302,7 +302,7 @@ void read_namelist(char* filename) {
     //Device
     if (fnr_get_int(&nml, "dev", "devid", &devid)) devid = 0;
     setup_device();
-    // algo 
+    // algo
 
     if (fnr_get_int(&nml, "algo", "debug", &debug_i)) debug_i=1;
     if(debug_i == 0) { debug = false; } else {debug = true;}
@@ -333,7 +333,7 @@ void read_namelist(char* filename) {
 
     driven = true;
     fnr_get_int(&nml, "init", "driven", &driven_i);
-    if(driven_i == 0) driven = false; 
+    if(driven_i == 0) driven = false;
 
     orszag_tang = true;
     fnr_get_int(&nml, "init", "orszag_tang", &orszag_tang_i);
@@ -343,7 +343,7 @@ void read_namelist(char* filename) {
 
     noise = true;
     fnr_get_int(&nml, "init", "noise", &noise_i);
-    if(noise_i == 0) noise = false; 
+    if(noise_i == 0) noise = false;
 
     if (fnr_get_float(&nml, "init", "aw_coll", &aw_coll)) aw_coll = 0. ;
 
@@ -454,7 +454,7 @@ void restartWrite(cuComplex* zp, cuComplex* zm, float tim) {
     DEBUGPRINT("Wrote zm \n");
 
     fclose(restart);
-    free(zp_h); free(zm_h); 
+    free(zp_h); free(zm_h);
 
 }
 
@@ -508,9 +508,9 @@ void setup_device(){
     printf("Global Memory (bytes): %lu\n", (unsigned long) prop.totalGlobalMem);
     printf("Shared Memory per Block (bytes): %lu\n", (unsigned long) prop.sharedMemPerBlock);
     printf("Registers per Block: %d\n", prop.regsPerBlock);
-    printf("Warp Size (threads): %d\n", prop.warpSize); 
+    printf("Warp Size (threads): %d\n", prop.warpSize);
     printf("Max Threads per Block: %d\n", prop.maxThreadsPerBlock);
-    printf("Max Size of Block Dimension (threads): %d * %d * %d\n", prop.maxThreadsDim[0], 
+    printf("Max Size of Block Dimension (threads): %d * %d * %d\n", prop.maxThreadsDim[0],
             prop.maxThreadsDim[1], prop.maxThreadsDim[2]);
     printf("Max Size of Grid Dimension (blocks): %d * %d * %d\n", prop.maxGridSize[0], prop.maxGridSize[1], prop.maxGridSize[2]);
 
@@ -522,7 +522,7 @@ void setup_grid_block(){
     cudaGetDeviceProperties(&prop,dev);
 
     //////////////////////////////////////////////////////////
-    //set up normal dimGrid/dimBlock config  
+    //set up normal dimGrid/dimBlock config
     int zBlockThreads = prop.maxThreadsDim[2];
     *&zThreads = zBlockThreads*prop.maxGridSize[2];
     totalThreads = prop.maxThreadsPerBlock;
@@ -541,11 +541,11 @@ void setup_grid_block(){
         dB.x = (unsigned int) sqrt((float) totalThreads/zBlockThreads);
         dB.y = (unsigned int) sqrt((float) totalThreads/zBlockThreads);
         dB.z = zBlockThreads;
-    }  
+    }
 
     dG.x = (unsigned int) ceil((float) Nx/dB.x + 0);
     dG.y = (unsigned int) ceil((float) Ny/dB.y + 0);
-    if(prop.maxGridSize[2]==1) dG.z = 1;    
+    if(prop.maxGridSize[2]==1) dG.z = 1;
     else dG.z = (unsigned int) ceil((float) Nz/dB.z) ;
     cudaMemcpyToSymbol(zThreads, &zThreads, sizeof(int));
     printf("zthreads = %d, zblockthreads = %d \n", zThreads, zBlockThreads);
@@ -599,7 +599,7 @@ void destroy_arrays(){
     cudaFree(f_d_tmp); cudaFree(g_d_tmp);
 
     // nonlin
-    cudaFree(temp1); cudaFree(temp2); cudaFree(temp3); 
+    cudaFree(temp1); cudaFree(temp2); cudaFree(temp3);
 
     cudaFree(fdxR); cudaFree(fdyR); cudaFree(gdxR); cudaFree(gdyR);
 
@@ -627,7 +627,7 @@ void finit(cuComplex *f, cuComplex *g)
                 f[index].y = 0.0;
 
                 g[index].x = 0.0;
-                g[index].y = 0.0; 
+                g[index].y = 0.0;
 
             }
         }
@@ -639,7 +639,7 @@ void finit(cuComplex *f, cuComplex *g)
     if(noise){
         float k2;
         float ampl = 1.e+0/(Nx*Ny*Nz);
-        for(iky=1;iky<=(Ny-1)/3+1; iky++){ 
+        for(iky=1;iky<=(Ny-1)/3+1; iky++){
             for(ikz=1;ikz<=(Nz-1)/3+1; ikz++){
                 for(ikx=1;ikx<=(Nx-1)/3+1; ikx++){
 
@@ -690,7 +690,7 @@ void finit(cuComplex *f, cuComplex *g)
                     f[index].y = sin(ran * 2.0* M_PI) * sqrt(xi0 * pow(iky,-10.0f/1.0f));
 
                     //ran = ((float) rand()) / ((float) RAND_MAX + 1);
-                    g[index].x = cos(ran * 2.0* M_PI) * sqrt(xi0 * pow(iky,-10.0f/1.0f));       
+                    g[index].x = cos(ran * 2.0* M_PI) * sqrt(xi0 * pow(iky,-10.0f/1.0f));
                     g[index].y = sin(ran * 2.0* M_PI) * sqrt(xi0 * pow(iky,-10.0f/1.0f));
                 }
             }
@@ -708,11 +708,11 @@ void finit(cuComplex *f, cuComplex *g)
                     f[index].y = sin(ran * 2.0* M_PI) * sqrt(xi0 * pow(iky,-10.0f/1.0f));
 
                     //ran = ((float) rand()) / ((float) RAND_MAX + 1);
-                    g[index].x = cos(ran * 2.0* M_PI)* sqrt(xi0 * pow(iky,-10.0f/1.0f));       
+                    g[index].x = cos(ran * 2.0* M_PI)* sqrt(xi0 * pow(iky,-10.0f/1.0f));
                     g[index].y = sin(ran * 2.0* M_PI) * sqrt(xi0 * pow(iky,-10.0f/1.0f));
                 }
             }
-        } 
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////
@@ -760,8 +760,8 @@ void finit(cuComplex *f, cuComplex *g)
     //	// Alfven wave collisions -- GGH
     ////////////////////////////////////////////////////////////////////////
 
-    // f = z+ = sin(x - z) 
-    // g = z- = -sin(y + z) 
+    // f = z+ = sin(x - z)
+    // g = z- = -sin(y + z)
 
     ikx = 1; iky=0; ikz = Nz-1;
     index = iky + (Ny/2+1)*ikx + (Ny/2+1)*Nx*ikz;
@@ -773,7 +773,7 @@ void finit(cuComplex *f, cuComplex *g)
 
     //f[index].y = aw_coll * 0.5;
     float aw_envelope;
-    ikx=0; iky=1; 
+    ikx=0; iky=1;
     for (ikz = 0 ; ikz<Nz/2+1 ; ikz++)
     {
         aw_envelope = 0.5 * aw_coll * exp(-0.05*(pow(ikz-kpeak, 2)));
