@@ -313,6 +313,11 @@ void read_namelist(char* filename) {
     nlrun = true;
     if (linonly) {nlrun=false;}
 
+    if( nlrun )
+        printf("Performing nonlinear run.\n");
+    else
+        printf("Performing linear run.\n");
+
     if (fnr_get_int(&nml, "algo", "restart", &restart_i)) restart_i = 0;
     if (restart_i == 0) { restart = false;} else {restart = true;}
 
