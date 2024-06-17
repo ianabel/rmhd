@@ -321,8 +321,12 @@ void read_namelist(char* filename) {
     if (fnr_get_int(&nml, "algo", "restart", &restart_i)) restart_i = 0;
     if (restart_i == 0) { restart = false;} else {restart = true;}
 
+
     restartname="restart";
     if(restart) fnr_get_string(&nml, "algo", "rest", &restartname);
+
+    if( restart )
+        printf("Restarting from restart file.\n")
 
     if (fnr_get_int(&nml,   "algo", "nwrite", &nwrite)) nwrite = 1;
     if (fnr_get_int(&nml,   "algo", "nforce", &nforce)) nforce = 1;
