@@ -146,6 +146,12 @@ void energy(cuComplex* kPhi, cuComplex* kA, float time, int jstep, struct NetCDF
     printf("Total Energy = %g\t Kin Energy = %g\t Magnetic Energy = %g\n", 
             totEnergy_h[0].x, kinEnergy_h[0].x, magEnergy_h[0].x);
 
+	 size_t start[1];
+	 start[0] = jstep;
+    if (retval = nc_put_vara(id.file, id.b2_tot, start, 1, &magEnergy_h[0].x )) ERR(retval);
+    if (retval = nc_put_vara(id.file, id.v2_tot, start, 1, &kinEnergy_h[0].x )) ERR(retval);
+    if (retval = nc_sync(id.file)) ERR(retval);
+
     free(totEnergy_h); free(kinEnergy_h); free(magEnergy_h); 
 
     DEBUGPRINT("Exiting energy\n");
@@ -208,6 +214,11 @@ void peak(cuComplex* kPhi, float time)
     free (rPhi_h);  
 }
 
+// Assumes we are passed A (not k_perp A or somesuch )
+void j_z_diag( cuComplex * A, float time, int jstep, struct NetCDF_ids id )
+{
+	return;
+}
 
 
 //////////////////////////////////////////////////////////////////////
@@ -301,6 +312,10 @@ struct NetCDF_ids init_netcdf_diag(struct NetCDF_ids id){
     if (retval = nc_def_dim(id.file, "nkpar",  Nz,            &id.kpar_dim))  ERR(retval);
     if (retval = nc_def_dim(id.file, "time",   NC_UNLIMITED,  &id.t_dim))     ERR(retval);
 
+    if (retval = nc_def_dim(id.file, "kx",   Nx,      &id.kx_dim))     ERR(retval);
+    if (retval = nc_def_dim(id.file, "ky",   Ny/2+1,  &id.ky_dim))     ERR(retval);
+
+
     static char title[] = "Gandalf simulation data";
     if (retval = nc_put_att_text(id.file, NC_GLOBAL, "Title", strlen(title), title)) ERR(retval);
 
@@ -370,6 +385,9 @@ struct NetCDF_ids init_netcdf_diag(struct NetCDF_ids id){
     if (retval = nc_def_var(id.file, "b2_kparkperp", NC_FLOAT, 3, id.kparperp, &id.b2)) ERR(retval);
     if (retval = nc_def_var(id.file, "v2_kparkperp", NC_FLOAT, 3, id.kparperp, &id.v2)) ERR(retval);
 
+    if (retval = nc_def_var(id.file, "v2", NC_FLOAT, 1, &id.t_dim, &id.v2_tot )) ERR(retval);
+    if (retval = nc_def_var(id.file, "b2", NC_FLOAT, 1, &id.t_dim, &id.b2_tot )) ERR(retval);
+
     if (retval = nc_enddef(id.file)) ERR(retval);
 
     // need to define a temporary array for kpar (which will also serve for kz because kz is defined only as a function)
@@ -378,6 +396,12 @@ struct NetCDF_ids init_netcdf_diag(struct NetCDF_ids id){
     for (int ikp=0; ikp<ikpmax; ikp++) {kperp[ikp] = ((float) ikp/ikpmax)*kpmax;} // only makes sense if X0 and Y0 each are unity. BD
     if (retval = nc_put_var(id.file, id.kpar,  kpar))  ERR(retval); 
     if (retval = nc_put_var(id.file, id.kperp, kperp)) ERR(retval); 
+
+	 float kx_vals[Nx],ky_vals[ Ny/2 + 1 ];
+	 for (int ikx=0; ikx < Nx; ++ikx) { kx_vals[ ikx ] = kx( ikx ); };
+	 for (int ikx=0; ikx < Ny/2 + 1; ++ikx) { ky_vals[ ikx ] = ky( ikx ); };
+    if (retval = nc_put_var(id.file, id.kx_dim, kx_vals))  ERR(retval); 
+    if (retval = nc_put_var(id.file, id.ky_dim, ky_vals)) ERR(retval); 
 
     if (retval = nc_put_var(id.file, id.nx, &Nx)) ERR(retval);
     if (retval = nc_put_var(id.file, id.ny, &Ny)) ERR(retval);

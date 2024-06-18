@@ -109,6 +109,9 @@ struct NetCDF_ids {
     int kparperp[3];
 
     size_t start_1d[2];
+
+	 int kx_dim,ky_dim;
+	 int v2_tot,b2_tot;
 };
 
 struct NetCDF_ids id;
