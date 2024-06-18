@@ -231,7 +231,7 @@ void j_z_diag( cuComplex * A, float time, int jstep, struct NetCDF_ids id )
 
     size_t start[4],count[4];
     start[0] = jstep; start[1] = 0;  start[2] = 0;  start[3] = 0;
-    count[1] = 1;     count[1] = Nz; count[2] = Nx; count[3] = Ny;
+    count[0] = 1;     count[1] = Nz; count[2] = Nx; count[3] = Ny;
 
     int retval;
     if (retval = nc_put_vara(id.file, id.jz, start, count, j_z_data)) ERR(retval);
