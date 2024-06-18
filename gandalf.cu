@@ -111,7 +111,10 @@ struct NetCDF_ids {
     size_t start_1d[2];
 
 	 int kx_dim,ky_dim;
+	 int kx_vals,ky_vals;
 	 int v2_tot,b2_tot;
+    int kxky[3];
+    int jz_avg;
 };
 
 struct NetCDF_ids id;

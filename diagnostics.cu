@@ -316,6 +316,8 @@ struct NetCDF_ids init_netcdf_diag(struct NetCDF_ids id){
 
     if (retval = nc_def_dim(id.file, "kx",   Nx,      &id.kx_dim))     ERR(retval);
     if (retval = nc_def_dim(id.file, "ky",   Ny/2+1,  &id.ky_dim))     ERR(retval);
+    if (retval = nc_def_var(id.file, "kx", NC_FLOAT, 1, &id.kx_dim, &id.kx_vals)) ERR(retval);
+    if (retval = nc_def_var(id.file, "ky", NC_FLOAT, 1, &id.ky_dim, &id.ky_vals)) ERR(retval);
 
 
     static char title[] = "Gandalf simulation data";
@@ -390,6 +392,12 @@ struct NetCDF_ids init_netcdf_diag(struct NetCDF_ids id){
     if (retval = nc_def_var(id.file, "v2", NC_FLOAT, 1, &id.t_dim, &id.v2_tot )) ERR(retval);
     if (retval = nc_def_var(id.file, "b2", NC_FLOAT, 1, &id.t_dim, &id.b2_tot )) ERR(retval);
 
+    id.kxky[0] = id.t_dim;
+    id.kxky[1] = id.kx_dim;
+    id.kxky[2] = id.ky_dim;
+
+    if (retval = nc_def_var(id.file, "jz_avg", NC_FLOAT, 3, id.kxky, &id.jz_avg)) ERR(retval);
+
     if (retval = nc_enddef(id.file)) ERR(retval);
 
     // need to define a temporary array for kpar (which will also serve for kz because kz is defined only as a function)
@@ -402,8 +410,8 @@ struct NetCDF_ids init_netcdf_diag(struct NetCDF_ids id){
 	 float kx_vals[Nx],ky_vals[ Ny/2 + 1 ];
 	 for (int ikx=0; ikx < Nx; ++ikx) { kx_vals[ ikx ] = kx( ikx ); };
 	 for (int ikx=0; ikx < Ny/2 + 1; ++ikx) { ky_vals[ ikx ] = ky( ikx ); };
-    if (retval = nc_put_var(id.file, id.kx_dim, kx_vals))  ERR(retval); 
-    if (retval = nc_put_var(id.file, id.ky_dim, ky_vals)) ERR(retval); 
+    if (retval = nc_put_var(id.file, id.kx_vals, kx_vals)) ERR(retval); 
+    if (retval = nc_put_var(id.file, id.ky_vals, ky_vals)) ERR(retval); 
 
     if (retval = nc_put_var(id.file, id.nx, &Nx)) ERR(retval);
     if (retval = nc_put_var(id.file, id.ny, &Ny)) ERR(retval);
