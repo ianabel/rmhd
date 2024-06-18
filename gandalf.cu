@@ -113,8 +113,8 @@ struct NetCDF_ids {
 	 int kx_dim,ky_dim;
 	 int kx_vals,ky_vals;
 
-	 int x_dim,y_dim;
-	 int x_vals,y_vals;
+	 int x_dim,y_dim,z_dim;
+	 int x_vals,y_vals,z_vals;
 	 int v2_tot,b2_tot;
     int txyz[4];
     int jz;
