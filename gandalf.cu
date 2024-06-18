@@ -41,7 +41,7 @@ float aw_coll;
 
 //Computation Grid
 __constant__ int Nx, Ny, Nz, zThreads;
-__constant__ size_t Nkc, Nkf;
+__constant__ size_t Nkc, Nkf, Nk;
 __constant__ float X0, Y0, Z0;
 
 float endtime;
@@ -158,8 +158,9 @@ int main(int argc, char* argv[]) {
         // Read namelist
         read_namelist(str);
 
-        *&Nkc = Nx*(Ny/2+1)*Nz*sizeof(cuComplex);
-        *&Nkf = Nx*(Ny/2+1)*Nz*sizeof(float);
+        Nk = Nx*(Ny/2+1)*Nz;
+        Nkc = Nk*sizeof(cuComplex);
+        Nkf = Nk*sizeof(float);
 
         cudaMemcpyToSymbol(Nkc, &Nkc, sizeof(size_t));
         cudaMemcpyToSymbol(Nkf, &Nkf, sizeof(size_t));
