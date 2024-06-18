@@ -225,12 +225,13 @@ void j_z_diag( cuComplex * A, float time, int jstep, struct NetCDF_ids id )
 
     if(cufftExecC2R(plan_C2R, A, fdxR ) != CUFFT_SUCCESS) printf("Inverse FFT for diagnostics failed. \n");	
 
-    float *j_z_data = (float*)malloc( Nkf );
-    CP_TO_CPU( j_z_data, fdxR, Nkf );
+	 size_t Nf = Nx * Ny * Nz;
+    float *j_z_data = (float*)malloc( sizeof(float) * Nf );
+    CP_TO_CPU( j_z_data, fdxR, sizeof(float) * Nf );
 
     size_t start[4],count[4];
     start[0] = jstep; start[1] = 0;  start[2] = 0;  start[3] = 0;
-    count[1] = 1;     count[1] = Nx; count[2] = Ny; count[3] = Nz;
+    count[1] = 1;     count[1] = Nz; count[2] = Nx; count[3] = Ny;
 
     int retval;
     if (retval = nc_put_vara(id.file, id.jz, start, count, j_z_data)) ERR(retval);
@@ -426,9 +427,9 @@ struct NetCDF_ids init_netcdf_diag(struct NetCDF_ids id){
     if (retval = nc_def_var(id.file, "b2", NC_FLOAT, 1, &id.t_dim, &id.b2_tot )) ERR(retval);
 
     id.txyz[0] = id.t_dim;
-    id.txyz[1] = id.x_dim;
-    id.txyz[2] = id.y_dim;
-    id.txyz[3] = id.z_dim;
+    id.txyz[1] = id.z_dim;
+    id.txyz[2] = id.x_dim;
+    id.txyz[3] = id.y_dim;
 
     if (retval = nc_def_var(id.file, "jz", NC_FLOAT, 4, id.txyz, &id.jz)) ERR(retval);
 
