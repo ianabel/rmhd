@@ -146,10 +146,11 @@ void energy(cuComplex* kPhi, cuComplex* kA, float time, int jstep, struct NetCDF
     printf("Total Energy = %g\t Kin Energy = %g\t Magnetic Energy = %g\n", 
             totEnergy_h[0].x, kinEnergy_h[0].x, magEnergy_h[0].x);
 
-	 size_t start[1];
-	 start[0] = jstep;
-    if (retval = nc_put_vara(id.file, id.b2_tot, start, 1, &magEnergy_h[0].x )) ERR(retval);
-    if (retval = nc_put_vara(id.file, id.v2_tot, start, 1, &kinEnergy_h[0].x )) ERR(retval);
+    size_t start[1],count[1];
+    start[0] = jstep;
+    count[0] = 1;
+    if (retval = nc_put_vara(id.file, id.b2_tot, start, count, &magEnergy_h[0].x )) ERR(retval);
+    if (retval = nc_put_vara(id.file, id.v2_tot, start, count, &kinEnergy_h[0].x )) ERR(retval);
     if (retval = nc_sync(id.file)) ERR(retval);
 
     free(totEnergy_h); free(kinEnergy_h); free(magEnergy_h); 
