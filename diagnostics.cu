@@ -219,28 +219,25 @@ void peak(cuComplex* kPhi, float time)
 // Assumes we are passed Psi (not k_perp Psi or somesuch )
 void j_z_diag( cuComplex * A, float time, int jstep, struct NetCDF_ids id )
 {
-	multKPerp <<<dG,dB>>> (A,A,-1.0);
+    multKPerp <<<dG,dB>>> (A,A,-1.0);
 
-   // Now have -k_perp^2 Psi = (const) * j_z
+    // Now have -k_perp^2 Psi = (const) * j_z
 
-   if(cufftExecC2R(plan_C2R, A, fdxR ) != CUFFT_SUCCESS) printf("Inverse FFT for diagnostics failed. \n");	
+    if(cufftExecC2R(plan_C2R, A, fdxR ) != CUFFT_SUCCESS) printf("Inverse FFT for diagnostics failed. \n");	
 
-	float *j_z_data = (float*)malloc( Nkf );
-	CP_TO_CPU( j_z_data, fdxR, Nkf );
+    float *j_z_data = (float*)malloc( Nkf );
+    CP_TO_CPU( j_z_data, fdxR, Nkf );
 
-	size_t start[4],count[4];
-	start[0] = jstep; start[1] = 0;  start[2] = 0;  start[3] = 0;
-	count[1] = 1;     count[1] = Nx; count[2] = Ny; count[3] = Nz;
+    size_t start[4],count[4];
+    start[0] = jstep; start[1] = 0;  start[2] = 0;  start[3] = 0;
+    count[1] = 1;     count[1] = Nx; count[2] = Ny; count[3] = Nz;
 
-	int retval;
-   if (retval = nc_put_vara(id.file, id.jz, start, count, j_z_data)) ERR(retval);
+    int retval;
+    if (retval = nc_put_vara(id.file, id.jz, start, count, j_z_data)) ERR(retval);
 
-	free (j_z_data);
+    free (j_z_data);
 
-   // Leave A as we found it
-   multKPerpInv <<<dG,dB>>> (A, A);
-	scale <<<dG,dB>>> (A, -2.0);
-	return;
+    return;
 }
 
 
@@ -264,9 +261,13 @@ void alf_diagnostics(cuComplex* kPhi, cuComplex* kA, cuComplex* zp, cuComplex* z
     scale <<<dG,dB>>> (kA, .5);
     //kA = .5*(zp-zm) = A
 
-	 // Pass Psi(kx,ky) to the diagnostic
+	 // Pass Psi(kx,ky,kz) to the diagnostic
 	 j_z_diag( kA, time, jstep, id );
-
+   
+    // reset kA = Psi
+    addsubt <<<dG,dB>>> (kA, zp, zm, -1);
+    scale <<<dG,dB>>> (kA, .5);
+    
     if (linonly) peak(kPhi, time);
 
     squareComplex <<<dG,dB>>> (kPhi);
