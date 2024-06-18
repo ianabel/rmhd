@@ -238,8 +238,8 @@ void j_z_diag( cuComplex * A, float time, int jstep, struct NetCDF_ids id )
 	free (j_z_data);
 
    // Leave A as we found it
-   multKPerpInv <<< dG,dB >>> (A,A);
-	scale <<< dG,dB >>> (A, -2.0 );
+   multKPerpInv <<<dG,dB>>> (A, A);
+	scale <<<dG,dB>>> (A, -2.0);
 	return;
 }
 
