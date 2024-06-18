@@ -116,7 +116,7 @@ struct NetCDF_ids {
 	 int x_dim,y_dim;
 	 int x_vals,y_vals;
 	 int v2_tot,b2_tot;
-    int txy_dims[3];
+    int txy[3];
     int jz_avg;
 };
 
