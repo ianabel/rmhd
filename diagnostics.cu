@@ -221,7 +221,21 @@ void j_z_diag( cuComplex * A, float time, int jstep, struct NetCDF_ids id )
 {
 	multKPerp <<<dG,dB>>> (A,A,-1.0);
 
-   // Now have k_perp^2 Psi = (const) * j_z
+   // Now have -k_perp^2 Psi = (const) * j_z
+
+   if(cufftExecC2R(plan_C2R, A, fdxR ) != CUFFT_SUCCESS) printf("Inverse FFT for diagnostics failed. \n");	
+
+	float *j_z_data = (float*)malloc( Nkf );
+	CP_TO_CPU( j_z_data, fdxR, Nkf );
+
+	size_t start[4],count[4];
+	start[0] = jstep; start[1] = 0;  start[2] = 0;  start[3] = 0;
+	count[1] = 1;     count[1] = Nx; count[2] = Ny; count[3] = Nz;
+
+	int retval;
+   if (retval = nc_put_vara(id.file, id.jz, start, count, j_z_data)) ERR(retval);
+
+	free (j_z_data)
 
    // Leave A as we found it
    multKPerpInv <<< dG,dB >>> (A,A);
@@ -331,8 +345,10 @@ struct NetCDF_ids init_netcdf_diag(struct NetCDF_ids id){
 
     if (retval = nc_def_dim(id.file, "x",   Nx,  &id.x_dim))     ERR(retval);
     if (retval = nc_def_dim(id.file, "y",   Ny,  &id.y_dim))     ERR(retval);
+    if (retval = nc_def_dim(id.file, "z",   Nz,  &id.z_dim))     ERR(retval);
     if (retval = nc_def_var(id.file, "x", NC_FLOAT, 1, &id.x_dim, &id.x_vals)) ERR(retval);
     if (retval = nc_def_var(id.file, "y", NC_FLOAT, 1, &id.y_dim, &id.y_vals)) ERR(retval);
+    if (retval = nc_def_var(id.file, "z", NC_FLOAT, 1, &id.z_dim, &id.z_vals)) ERR(retval);
 
 
 
@@ -408,11 +424,12 @@ struct NetCDF_ids init_netcdf_diag(struct NetCDF_ids id){
     if (retval = nc_def_var(id.file, "v2", NC_FLOAT, 1, &id.t_dim, &id.v2_tot )) ERR(retval);
     if (retval = nc_def_var(id.file, "b2", NC_FLOAT, 1, &id.t_dim, &id.b2_tot )) ERR(retval);
 
-    id.txy[0] = id.t_dim;
-    id.txy[1] = id.x_dim;
-    id.txy[2] = id.y_dim;
+    id.txyz[0] = id.t_dim;
+    id.txyz[1] = id.x_dim;
+    id.txyz[2] = id.y_dim;
+    id.txyz[3] = id.z_dim;
 
-    if (retval = nc_def_var(id.file, "jz_avg", NC_FLOAT, 3, id.txy, &id.jz_avg)) ERR(retval);
+    if (retval = nc_def_var(id.file, "jz", NC_FLOAT, 4, id.txyz, &id.jz)) ERR(retval);
 
     if (retval = nc_enddef(id.file)) ERR(retval);
 
@@ -429,11 +446,13 @@ struct NetCDF_ids init_netcdf_diag(struct NetCDF_ids id){
     if (retval = nc_put_var(id.file, id.kx_vals, kx_vals)) ERR(retval); 
     if (retval = nc_put_var(id.file, id.ky_vals, ky_vals)) ERR(retval); 
 
-    float x_vals[Nx],y_vals[Ny];
+    float x_vals[Nx],y_vals[Ny],z_vals[Nz];
 	 for (int ix=0; ix < Nx; ++ix) { x_vals[ ix ] = static_cast<float>( ix )/( Nx * X0 ); };
     if (retval = nc_put_var(id.file, id.x_vals, x_vals)) ERR(retval); 
 	 for (int iy=0; iy < Ny; ++iy) { y_vals[ iy ] = static_cast<float>( iy )/( Ny * Y0 ); };
     if (retval = nc_put_var(id.file, id.y_vals, y_vals)) ERR(retval); 
+	 for (int iz=0; iz < Nz; ++iz) { z_vals[ iz ] = static_cast<float>( iz )/( Nz * Z0 ); };
+    if (retval = nc_put_var(id.file, id.z_vals, z_vals)) ERR(retval); 
 
 
     if (retval = nc_put_var(id.file, id.nx, &Nx)) ERR(retval);
