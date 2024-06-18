@@ -149,6 +149,7 @@ void energy(cuComplex* kPhi, cuComplex* kA, float time, int jstep, struct NetCDF
     size_t start[1],count[1];
     start[0] = jstep;
     count[0] = 1;
+    int retval;
     if (retval = nc_put_vara(id.file, id.b2_tot, start, count, &magEnergy_h[0].x )) ERR(retval);
     if (retval = nc_put_vara(id.file, id.v2_tot, start, count, &kinEnergy_h[0].x )) ERR(retval);
     if (retval = nc_sync(id.file)) ERR(retval);
