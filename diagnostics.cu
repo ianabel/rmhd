@@ -235,7 +235,7 @@ void j_z_diag( cuComplex * A, float time, int jstep, struct NetCDF_ids id )
 	int retval;
    if (retval = nc_put_vara(id.file, id.jz, start, count, j_z_data)) ERR(retval);
 
-	free (j_z_data)
+	free (j_z_data);
 
    // Leave A as we found it
    multKPerpInv <<< dG,dB >>> (A,A);

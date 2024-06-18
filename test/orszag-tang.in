@@ -1,0 +1,46 @@
+&dev
+ devid=0
+/
+&algo
+ debug = 0
+ linonly = 0
+ nwrite = 5
+ nforce = 0
+ maxdt = 0.001
+ cfl = 0.1
+/
+!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! Initial conditions
+!!!!!!!!!!!!!!!!!!!!!!!!!!!
+&init
+ decaying = 0
+ driven = 0
+ orszag_tang = 1
+ noise = 0
+ aw_coll = 0
+ kpeak = 0
+/
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! Grid
+!!!!!!!!!!!!!!!!!!!!!!!!!!!
+&grid
+ Nx = 128
+ Ny = 128
+ Nz = 16
+ X0 = 1.0
+ Y0 = 1.0
+ Z0 = 1.0
+ nsteps = 2000
+/
+!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! Dissipation
+!!!!!!!!!!!!!!!!!!!!!!!!!!!
+&dissipation
+  alpha_z = 8
+  nu_kz = 0.0
+  alpha_hyper = 8
+  nu_hyper = 0.0
+/
+
+
