@@ -216,9 +216,15 @@ void peak(cuComplex* kPhi, float time)
     free (rPhi_h);  
 }
 
-// Assumes we are passed A (not k_perp A or somesuch )
+// Assumes we are passed Psi (not k_perp Psi or somesuch )
 void j_z_diag( cuComplex * A, float time, int jstep, struct NetCDF_ids id )
 {
+	multKPerp <<<dG,dB>>> (A,A,1.0);
+
+   // Now have k_perp^2 Psi = (const) * j_z
+
+   // Leave A as we found it
+   multKPerpInv <<< dG,dB >>> (A,A);
 	return;
 }
 
@@ -242,6 +248,9 @@ void alf_diagnostics(cuComplex* kPhi, cuComplex* kA, cuComplex* zp, cuComplex* z
 
     scale <<<dG,dB>>> (kA, .5);
     //kA = .5*(zp-zm) = A
+
+	 // Pass Psi(kx,ky) to the diagnostic
+	 j_z_diag( kA, time, jstep, id );
 
     if (linonly) peak(kPhi, time);
 
