@@ -219,6 +219,7 @@ void peak(cuComplex* kPhi, float time)
 // Assumes we are passed Psi (not k_perp Psi or somesuch )
 void j_z_diag( cuComplex * A, float time, int jstep, struct NetCDF_ids id )
 {
+	return;
 	multKPerp <<<dG,dB>>> (A,A,1.0);
 
    // Now have k_perp^2 Psi = (const) * j_z
