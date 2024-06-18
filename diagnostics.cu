@@ -319,6 +319,12 @@ struct NetCDF_ids init_netcdf_diag(struct NetCDF_ids id){
     if (retval = nc_def_var(id.file, "kx", NC_FLOAT, 1, &id.kx_dim, &id.kx_vals)) ERR(retval);
     if (retval = nc_def_var(id.file, "ky", NC_FLOAT, 1, &id.ky_dim, &id.ky_vals)) ERR(retval);
 
+    if (retval = nc_def_dim(id.file, "x",   Nx,  &id.x_dim))     ERR(retval);
+    if (retval = nc_def_dim(id.file, "y",   Ny,  &id.y_dim))     ERR(retval);
+    if (retval = nc_def_var(id.file, "x", NC_FLOAT, 1, &id.x_dim, &id.x_vals)) ERR(retval);
+    if (retval = nc_def_var(id.file, "y", NC_FLOAT, 1, &id.y_dim, &id.y_vals)) ERR(retval);
+
+
 
     static char title[] = "Gandalf simulation data";
     if (retval = nc_put_att_text(id.file, NC_GLOBAL, "Title", strlen(title), title)) ERR(retval);
@@ -392,11 +398,11 @@ struct NetCDF_ids init_netcdf_diag(struct NetCDF_ids id){
     if (retval = nc_def_var(id.file, "v2", NC_FLOAT, 1, &id.t_dim, &id.v2_tot )) ERR(retval);
     if (retval = nc_def_var(id.file, "b2", NC_FLOAT, 1, &id.t_dim, &id.b2_tot )) ERR(retval);
 
-    id.kxky[0] = id.t_dim;
-    id.kxky[1] = id.kx_dim;
-    id.kxky[2] = id.ky_dim;
+    id.txy[0] = id.t_dim;
+    id.txy[1] = id.x_dim;
+    id.txy[2] = id.y_dim;
 
-    if (retval = nc_def_var(id.file, "jz_avg", NC_FLOAT, 3, id.kxky, &id.jz_avg)) ERR(retval);
+    if (retval = nc_def_var(id.file, "jz_avg", NC_FLOAT, 3, id.txy, &id.jz_avg)) ERR(retval);
 
     if (retval = nc_enddef(id.file)) ERR(retval);
 
@@ -409,9 +415,16 @@ struct NetCDF_ids init_netcdf_diag(struct NetCDF_ids id){
 
 	 float kx_vals[Nx],ky_vals[ Ny/2 + 1 ];
 	 for (int ikx=0; ikx < Nx; ++ikx) { kx_vals[ ikx ] = kx( ikx ); };
-	 for (int ikx=0; ikx < Ny/2 + 1; ++ikx) { ky_vals[ ikx ] = ky( ikx ); };
+	 for (int iky=0; iky < Ny/2 + 1; ++iky) { ky_vals[ iky ] = ky( iky ); };
     if (retval = nc_put_var(id.file, id.kx_vals, kx_vals)) ERR(retval); 
     if (retval = nc_put_var(id.file, id.ky_vals, ky_vals)) ERR(retval); 
+
+    float x_vals[Nx],y_vals[Ny];
+	 for (int ix=0; ix < Nx; ++ix) { x_vals[ ix ] = static_cast<float>( ix )/( Nx * X0 ); };
+    if (retval = nc_put_var(id.file, id.x_vals, x_vals)) ERR(retval); 
+	 for (int iy=0; iy < Ny; ++iy) { y_vals[ iy ] = static_cast<float>( iy )/( Ny * Y0 ); };
+    if (retval = nc_put_var(id.file, id.y_vals, y_vals)) ERR(retval); 
+
 
     if (retval = nc_put_var(id.file, id.nx, &Nx)) ERR(retval);
     if (retval = nc_put_var(id.file, id.ny, &Ny)) ERR(retval);
