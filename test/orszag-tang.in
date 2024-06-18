@@ -4,7 +4,7 @@
 &algo
  debug = 0
  linonly = 0
- nwrite = 5
+ nwrite = 20
  nforce = 0
  maxdt = 0.001
  cfl = 0.1
