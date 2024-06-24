@@ -157,6 +157,8 @@ int main(int argc, char* argv[]) {
     if ( argc < 1 ) {
         printf( "Usage: ./gandalf runname");
     } else {
+	printf( "Usage Correct. Continuing.");
+
         feenableexcept(FE_INVALID | FE_OVERFLOW);
 
         // Assuming argv[1] is the runname
