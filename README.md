@@ -32,5 +32,5 @@ salloc --nodes 1 --qos interactive --time 01:00:00 --constraint gpu
 
 ../gandalf a01
 
-
+6. replace cuFFt with FFTX and fix the time stepping and...
 
