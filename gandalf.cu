@@ -8,6 +8,16 @@
 #include <fenv.h>
 #include <assert.h>
 
+//////////
+/*
+nbidler added 2024/06/28
+FFTX include statements
+*/
+#include "fftx3.hpp"
+#include "interface.hpp"
+#include "transformlib.hpp"
+//////////
+
 #define ERR(e) {printf("Error: %s\n", nc_strerror(e)); exit(2);};
 #define DEBUGPRINT(_fmt, ...)  if (debug) fprintf(stderr, "[file %s, line %d]: " _fmt, __FILE__, __LINE__, ##__VA_ARGS__)
 
